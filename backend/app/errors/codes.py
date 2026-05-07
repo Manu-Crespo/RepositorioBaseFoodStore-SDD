@@ -1,0 +1,31 @@
+"""Error codes for the application."""
+from enum import Enum
+
+
+class ErrorCode(str, Enum):
+    """Application error codes."""
+
+    # Validation
+    VALIDATION_ERROR = "VALIDATION_ERROR"
+    INVALID_FORMAT = "INVALID_FORMAT"
+
+    # Not found
+    NOT_FOUND = "NOT_FOUND"
+    EMAIL_EXISTS = "EMAIL_EXISTS"
+
+    # Authentication
+    UNAUTHORIZED = "UNAUTHORIZED"
+    INVALID_CREDENTIALS = "INVALID_CREDENTIALS"
+    INVALID_TOKEN = "INVALID_TOKEN"
+    EXPIRED_TOKEN = "EXPIRED_TOKEN"
+    MISSING_TOKEN = "MISSING_TOKEN"
+    INACTIVE_USER = "INACTIVE_USER"
+    USER_NOT_FOUND = "USER_NOT_FOUND"
+
+    # Authorization
+    FORBIDDEN = "FORBIDDEN"
+    INSUFFICIENT_PERMISSIONS = "INSUFFICIENT_PERMISSIONS"
+
+    # Server errors
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+    SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE"
