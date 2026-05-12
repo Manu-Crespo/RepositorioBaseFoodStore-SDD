@@ -73,27 +73,15 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
         // Token expired - need to refresh
         try {
-          const response = await fetch('/api/v1/auth/refresh', {
-            method: 'POST',
-            credentials: 'include', // Use httpOnly cookie
+          const { refreshToken: refreshTokenApi } = await import('../shared/api/auth');
+          const data = await refreshTokenApi();
+          
+          set({
+            accessToken: data.access_token,
+            isAuthenticated: true,
           });
-
-          if (response.ok) {
-            const data = await response.json();
-            set({
-              accessToken: data.access_token,
-              isAuthenticated: true,
-            });
-          } else {
-            // Refresh failed - logout
-            set({
-              user: null,
-              accessToken: null,
-              isAuthenticated: false,
-            });
-          }
         } catch {
-          // Network error - logout
+          // Refresh failed or network error - logout
           set({
             user: null,
             accessToken: null,

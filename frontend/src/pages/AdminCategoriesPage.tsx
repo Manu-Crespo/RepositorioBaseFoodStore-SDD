@@ -124,6 +124,7 @@ export function AdminCategoriesPage() {
             </h2>
             <CategoryForm
               category={editingCategory}
+              parentCategories={tree}
               onSubmit={handleSubmit}
               onCancel={() => {
                 setShowForm(false);

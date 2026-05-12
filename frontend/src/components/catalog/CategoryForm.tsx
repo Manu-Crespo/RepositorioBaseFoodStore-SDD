@@ -6,6 +6,7 @@ import type { CategoryCreate, CategoryUpdate, CategoryTree } from '../../shared/
 interface CategoryFormProps {
   category?: CategoryTree | null;
   parentId?: string | null;
+  parentCategories?: Array<{ id: string; name: string }>;
   onSubmit: (data: CategoryCreate | CategoryUpdate) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
@@ -14,6 +15,7 @@ interface CategoryFormProps {
 export function CategoryForm({
   category,
   parentId,
+  parentCategories = [],
   onSubmit,
   onCancel,
   isLoading = false,
@@ -22,6 +24,9 @@ export function CategoryForm({
   const [description, setDescription] = useState('');
   const [parentIdValue, setParentIdValue] = useState<string>(parentId || category?.parent_id || '');
   const [error, setError] = useState<string | null>(null);
+
+  // Filter parent categories — exclude the category itself and its descendants when editing
+  const availableParents = parentCategories.filter((p) => p.id !== category?.id);
 
   useEffect(() => {
     if (category) {
@@ -114,8 +119,10 @@ export function CategoryForm({
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={isLoading}
         >
-          <option value="">Sin categoría padre (raíz)</option>
-          {/* TODO: Add parent category options */}
+          <option value="">Categoría padre</option>
+          {availableParents.map((cat) => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
         </select>
       </div>
 

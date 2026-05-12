@@ -50,6 +50,136 @@
   --color-surface-card: #1e293b;
   --color-surface-sidebar: #020617;
   --color-surface-border: #334155;
+  /* Surface elevation tokens */
+  --color-surface-elevated: #1e293b;
+  --color-surface-overlay: rgba(15, 23, 42, 0.85);
+  --color-surface-glass: rgba(30, 41, 59, 0.8);
+}
+
+/* ============================================
+   Animation Tokens
+   ============================================ */
+:root {
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-enter: 300ms;
+  --duration-exit: 200ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================
+   Keyframes
+   ============================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Animation Utility Classes
+   ============================================ */
+.animate-fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.animate-fade-out {
+  animation: fadeOut var(--duration-exit) var(--ease-in);
+}
+
+.animate-slide-up {
+  animation: slideUp var(--duration-normal) var(--ease-out);
+}
+
+.animate-slide-down {
+  animation: slideDown var(--duration-normal) var(--ease-out);
+}
+
+.animate-slide-left {
+  animation: slideLeft var(--duration-normal) var(--ease-out);
+}
+
+.animate-slide-right {
+  animation: slideRight var(--duration-normal) var(--ease-out);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--duration-normal) var(--ease-out);
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-dark-700) 25%,
+    var(--color-dark-600) 50%,
+    var(--color-dark-700) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Base styles - Dark theme by default */
@@ -99,16 +229,27 @@ h6 { font-size: 1rem; font-weight: 500; }
 a {
   color: #f59e0b;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--duration-fast) ease;
 }
 
 a:hover {
   color: #fbbf24;
 }
 
+/* ============================================
+   Glassmorphism
+   ============================================ */
+.glass {
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
 /* Custom scrollbar - Dark theme */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -118,6 +259,7 @@ a:hover {
 ::-webkit-scrollbar-thumb {
   background: var(--color-dark-600);
   border-radius: 4px;
+  transition: background var(--duration-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -128,30 +270,11 @@ a:hover {
 :focus-visible {
   outline: 2px solid #f59e0b;
   outline-offset: 2px;
+  transition: outline-color var(--duration-fast);
 }
 
 /* Selection */
 ::selection {
   background-color: #f59e0b;
   color: var(--color-dark-900);
-}
-
-/* Register Button - Estilos específicos aislados */
-.register-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  background-color: #f59e0b;
-  color: #f1f5f9;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.register-btn:hover {
-  background-color: #fbbf24;
-  color: #0f172a;
 }

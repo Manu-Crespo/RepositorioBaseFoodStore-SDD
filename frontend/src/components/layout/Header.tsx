@@ -34,9 +34,12 @@ const Logo = ({ onMenuToggle }: { onMenuToggle?: () => void }) => (
     )}
     <Link to="/" className="flex items-center gap-2">
       <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
-        <span className="text-dark-900 font-bold text-lg">F</span>
+        <svg className="w-5 h-5 text-dark-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18l-1.5 13H4.5L3 7z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7 7V5a3 3 0 016 0v2" />
+        </svg>
       </div>
-      <span className="text-xl font-display font-semibold text-slate-100 hidden sm:inline">Food Store</span>
+      <span className="text-xl font-display font-semibold text-slate-100 hidden sm:inline">Foodstore</span>
     </Link>
   </div>
 );
@@ -69,7 +72,7 @@ export function Header({ onMenuToggle }: { onMenuToggle?: () => void }) {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `text-sm font-medium transition-colors ${
+                `text-base font-medium transition-colors ${
                   isActive ? 'text-amber-400' : 'text-slate-400 hover:text-slate-200'
                 }`
               }

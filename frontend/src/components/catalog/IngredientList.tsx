@@ -43,15 +43,12 @@ export function IngredientList({
 
   if (isLoading) {
     return (
-      <div className="p-4 text-center text-gray-500">
-        <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2" />
-        Cargando ingredientes...
-      </div>
+      <div className="text-center py-8 text-slate-400">Cargando ingredientes...</div>
     );
   }
 
   return (
-    <div className="ingredient-list space-y-4">
+    <div className="space-y-4">
       {/* Filters */}
       <div className="flex gap-4 flex-wrap">
         <div className="flex-1 min-w-[200px]">
@@ -60,13 +57,13 @@ export function IngredientList({
             placeholder="Buscar ingrediente..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-slate-500"
           />
         </div>
         <select
           value={filterAllergen}
           onChange={(e) => setFilterAllergen(e.target.value as Allergen | '')}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 bg-slate-700 border border-slate-600 text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
         >
           <option value="">Todos los alérgenos</option>
           {Object.entries(ALLERGEN_LABELS).map(([key, label]) => (
@@ -78,35 +75,37 @@ export function IngredientList({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nombre</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Alérgenos</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Acciones</th>
+      <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-slate-700 border-b border-slate-600">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-medium text-slate-200">Nombre</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-slate-200">Alérgenos</th>
+              <th className="px-4 py-3 text-right text-sm font-medium text-slate-200">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {filteredIngredients.length === 0 ? (
               <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={3} className="px-4 py-8 text-center text-slate-500">
                   No se encontraron ingredientes
                 </td>
               </tr>
             ) : (
               filteredIngredients.map((ingredient) => (
-                <tr key={ingredient.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm text-gray-900">{ingredient.name}</td>
+                <tr key={ingredient.id} className="border-b border-slate-700 hover:bg-slate-700/50">
+                  <td className="px-4 py-3">
+                    <span className="text-slate-100">{ingredient.name}</span>
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1">
                       {ingredient.allergens.length === 0 ? (
-                        <span className="text-sm text-gray-400">Sin alérgenos</span>
+                        <span className="text-sm text-slate-500">Sin alérgenos</span>
                       ) : (
                         ingredient.allergens.map((allergen) => (
                           <span
                             key={allergen}
-                            className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded"
+                            className="px-2 py-0.5 bg-amber-900/30 text-amber-400 text-xs rounded"
                           >
                             {ALLERGEN_LABELS[allergen] || allergen}
                           </span>
@@ -118,14 +117,14 @@ export function IngredientList({
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => onEdit?.(ingredient)}
-                        className="p-1 text-blue-600 hover:text-blue-800"
+                        className="p-1 text-amber-400 hover:text-amber-300 transition-colors"
                         title="Editar"
                       >
                         ✏️
                       </button>
                       <button
                         onClick={() => onDelete?.(ingredient)}
-                        className="p-1 text-red-600 hover:text-red-800"
+                        className="p-1 text-red-400 hover:text-red-300 transition-colors"
                         title="Eliminar"
                       >
                         🗑️
@@ -141,21 +140,21 @@ export function IngredientList({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-center gap-2 mt-4">
           <button
             onClick={() => onPageChange?.(page - 1)}
             disabled={page <= 1}
-            className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50"
+            className="px-3 py-1 border border-slate-600 text-slate-300 rounded disabled:opacity-50 hover:bg-slate-700 transition-colors"
           >
             Anterior
           </button>
-          <span className="px-3 py-1 text-sm text-gray-600">
+          <span className="px-3 py-1 text-slate-400">
             Página {page} de {totalPages}
           </span>
           <button
             onClick={() => onPageChange?.(page + 1)}
             disabled={page >= totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50"
+            className="px-3 py-1 border border-slate-600 text-slate-300 rounded disabled:opacity-50 hover:bg-slate-700 transition-colors"
           >
             Siguiente
           </button>

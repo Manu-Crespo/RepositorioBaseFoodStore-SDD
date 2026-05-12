@@ -26,7 +26,7 @@ export function CategoryTree({
   return (
     <div className="category-tree">
       {categoryArray.length === 0 ? (
-        <p className="text-gray-500 text-sm">No hay categorías</p>
+        <p className="text-slate-500 text-sm">No hay categorías</p>
       ) : (
         <ul className="space-y-1">
           {categoryArray.map((category) => (
@@ -73,8 +73,10 @@ function CategoryTreeNode({
   return (
     <li>
       <div
-        className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-gray-100 ${
-          isSelected ? 'bg-blue-50 border-l-2 border-blue-500' : ''
+        className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors duration-150 ${
+          isSelected
+            ? 'bg-amber-500/10 border-l-2 border-amber-500'
+            : 'hover:bg-slate-700/50 border-l-2 border-transparent'
         }`}
         style={{ paddingLeft: `${level * 16 + 8}px` }}
       >
@@ -85,7 +87,7 @@ function CategoryTreeNode({
               e.stopPropagation();
               setIsExpanded(!isExpanded);
             }}
-            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-gray-700"
+            className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors"
           >
             {isExpanded ? '▼' : '▶'}
           </button>
@@ -96,7 +98,7 @@ function CategoryTreeNode({
         {/* Category name */}
         <span
           onClick={() => onSelect?.(category)}
-          className="flex-1 text-sm font-medium text-gray-700"
+          className="flex-1 text-sm font-medium text-slate-200"
         >
           {category.name}
         </span>
@@ -109,7 +111,7 @@ function CategoryTreeNode({
                 e.stopPropagation();
                 onEdit?.(category);
               }}
-              className="p-1 text-blue-600 hover:text-blue-800 text-xs"
+              className="p-1 text-amber-400 hover:text-amber-300 transition-colors text-xs"
               title="Editar"
             >
               ✏️
@@ -119,7 +121,7 @@ function CategoryTreeNode({
                 e.stopPropagation();
                 onDelete?.(category);
               }}
-              className="p-1 text-red-600 hover:text-red-800 text-xs"
+              className="p-1 text-red-400 hover:text-red-300 transition-colors text-xs"
               title="Eliminar"
             >
               🗑️

@@ -161,3 +161,37 @@ src/
 - **useNavigationItems como hook puro**: No modifica stores, solo computa返回值
 - **Sidebar dentro de Layout**: No es una ruta, es parte del Layout
 - **Route guards protegen Outlet**: Los guards decides si renderizar Outlet, no Layout
+
+---
+
+## Frontend Redesign — Complemento de Diseño (mergeado 2026-05-12)
+
+### Decisions Adicionales
+
+#### D1: Mantener Tailwind CSS v4 + clsx (no agregar framework UI)
+**Rationale**: El proyecto ya tiene Tailwind v4 con tema custom. Agregar shadcn/ui o Chakra implicaría migración de componentes existentes. Mejor crear componentes UI internos siguiendo guías ui-ux-pro-max.
+
+#### D2: CSS animations + Tailwind (sin framer-motion inicialmente)
+**Rationale**: Las animaciones necesarias (fade, slide, scale, shimmer) son alcanzables con Tailwind transition + keyframes en index.css. Evita agregar dependencia de 30KB+. framer-motion se deja como opción futura.
+
+#### D3: Tokens de animación en index.css con custom properties
+**Rationale**: `--duration-fast: 150ms`, `--duration-normal: 250ms`, easings como `--ease-out: cubic-bezier(...)` en index.css permiten consistencia global.
+
+#### D4: Componentes UI con forwardRef + displayName + tipos completos
+**Rationale**: Para accesibilidad y composición, todos los componentes UI debe forwardear refs (tooltips, modales, focus management) y tener displayName para debugging.
+
+#### D5: lazy loading por ruta con Suspense + skeleton fallback
+**Rationale**: Mejora rendimiento percibido. Cada página se importa con React.lazy() + un Skeleton como fallback que refleja la estructura de la página.
+
+#### D6: Arquitectura FSD — entidades puras, features = lógica + UI
+**Rationale**: Separación clara: entities/ (types, validators, formatters sin imports de stores), features/ (componentes + hooks que combinan entities + stores), widgets/ (composiciones complejas).
+
+#### D7: Sistema de animaciones basado en clases utilitarias
+**Rationale**: Clases reutilizables como `.animate-fade-in`, `.animate-slide-up`, `.animate-shimmer` con stagger via `animation-delay` inline.
+
+### Risks / Trade-offs Adicionales
+
+- **[Rendimiento] Múltiples animaciones simultáneas** → Usar transform y opacity solamente (no animar width/height/top/left)
+- **[Accesibilidad] Animaciones pueden causar molestias** → prefers-reduced-motion: reduce con animation-duration: 0ms
+- **[Complejidad] Refactor de componentes existentes** → Cambios aditivos, no sustractivos. No romper interfaces existentes.
+- **[Bundle size] Skeleton y animaciones** → Componentes ligeros sin dependencias externas, animaciones CSS nativo.

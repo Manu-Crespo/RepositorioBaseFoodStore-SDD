@@ -83,9 +83,9 @@ export function ProductFilters({
           aria-label="Filtrar por categoría"
         >
           <option value="">Todas las categorías</option>
-          {categories.map((cat) => (
+          {categories.filter((cat) => cat.parent_id !== null).map((cat) => (
             <option key={cat.id} value={cat.id}>
-              {cat.name} ({cat.product_count})
+              {cat.name}
             </option>
           ))}
         </select>

@@ -44,7 +44,7 @@ export function ProductCard<T extends ProductBase>({ product, onClick, variant =
 
   return (
     <Card
-      interactive
+      variant="interactive"
       className={`overflow-hidden cursor-pointer ${isOutOfStock ? 'opacity-75' : ''}`}
       onClick={() => onClick?.(product)}
     >

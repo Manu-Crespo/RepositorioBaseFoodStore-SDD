@@ -66,3 +66,35 @@ El sistema DEBE generar los items de navegación dinámicamente según los permi
 #### Escenario: Items de navegación generados para cada rol
 - **CUANDO** se llama al hook useNavigationItems con rol "stock"
 - **ENTONCES** devuelve un array de items de navegación con etiquetas, iconos y paths apropiados para el rol stock
+
+---
+
+## MEJORAS POSTERIORES (merged from frontend-redesign, 2026-05-12)
+
+### Requisito: Transiciones suaves en navegación
+El sistema DEBE aplicar transiciones suaves al cambiar entre rutas, con indicación visual de la transición.
+
+#### Escenario: Transición entre páginas admin
+- **CUANDO** el usuario navega entre páginas admin (ej: Categorías → Productos)
+- **ENTONCES** el contenido principal hace fade-out/fade-in en 200ms con skeleton loading como fallback
+
+### Requisito: Breadcrumbs en páginas admin
+El sistema DEBE mostrar breadcrumbs en todas las páginas admin para orientación del usuario.
+
+#### Escenario: Breadcrumb en gestión de productos
+- **CUANDO** el admin está en /admin/productos
+- **ENTONCES** ve breadcrumb: Inicio > Administración > Productos con el último item como texto plano (no link)
+
+### Requisito: Sidebar colapsable en desktop
+El sidebar DEBE permitir colapsarse a iconos solamente en desktop para dar más espacio al contenido.
+
+#### Escenario: Sidebar colapsado
+- **CUANDO** el usuario hace clic en el botón colapsar del sidebar
+- **ENTONCES** el sidebar se reduce a `w-16` mostrando solo iconos, con animación de 200ms, los tooltips aparecen en hover sobre iconos
+
+### Requisito: Header con scroll-aware behavior
+El header DEBE cambiar su estilo al scrollear hacia abajo (más compacto, con sombra) para mejor aprovechamiento del espacio.
+
+#### Escenario: Header compacto al scrollear
+- **CUANDO** el usuario scrollea hacia abajo > 50px
+- **ENTONCES** el header reduce su padding, agrega `shadow-md` y fondo más opaco con transición de 200ms

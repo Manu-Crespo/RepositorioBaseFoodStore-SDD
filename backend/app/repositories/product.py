@@ -67,6 +67,10 @@ class ProductRepository(BaseRepository[Product]):
             select(Product)
             .join(ProductCategory)
             .where(ProductCategory.category_id.in_(category_ids))
+            .options(
+                selectinload(Product.categories),
+                selectinload(Product.product_ingredients).selectinload(ProductIngredient.ingredient)
+            )
         )
         if hasattr(Product, "deleted_at"):
             query = query.where(Product.deleted_at.is_(None))
@@ -80,6 +84,10 @@ class ProductRepository(BaseRepository[Product]):
             select(Product)
             .join(ProductIngredient)
             .where(ProductIngredient.ingredient_id == ingredient_id)
+            .options(
+                selectinload(Product.categories),
+                selectinload(Product.product_ingredients).selectinload(ProductIngredient.ingredient)
+            )
         )
         if hasattr(Product, "deleted_at"):
             query = query.where(Product.deleted_at.is_(None))
@@ -145,6 +153,10 @@ class ProductRepository(BaseRepository[Product]):
         stmt = (
             select(Product)
             .where(Product.name.ilike(f"%{query}%"))
+            .options(
+                selectinload(Product.categories),
+                selectinload(Product.product_ingredients).selectinload(ProductIngredient.ingredient)
+            )
             .limit(limit)
         )
         if hasattr(Product, "deleted_at"):

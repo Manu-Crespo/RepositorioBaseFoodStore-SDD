@@ -2,19 +2,21 @@
 
 export type Allergen = 
   | 'gluten'
-  | 'crustaceans'
-  | 'eggs'
-  | 'fish'
-  | 'peanuts'
-  | 'soybeans'
-  | 'milk'
-  | 'nuts'
-  | 'celery'
-  | 'mustard'
-  | 'sesame'
-  | 'sulphites'
-  | 'lupin'
-  | 'mollusks';
+  | 'lacteos'
+  | 'huevos'
+  | 'pescado'
+  | 'mariscos'
+  | 'frutos_secos'
+  | 'cacahuetes'
+  | 'soja'
+  | 'sesamo'
+  | 'mostaza'
+  | 'apio'
+  | 'sulfitos'
+  | 'altramuces'
+  | 'moluscos'
+  | 'vegetariano'
+  | 'vegano';
 
 export interface IngredientCreate {
   name: string;

@@ -1,46 +1,66 @@
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { forwardRef } from 'react';
 import { cn } from '../../shared/utils/cn';
 
+type CardVariant = 'default' | 'interactive' | 'elevated' | 'bordered';
+
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'interactive';
-  interactive?: boolean;
-  onClick?: () => void;
+  variant?: CardVariant;
+  animated?: boolean;
 }
 
+const variantStyles: Record<CardVariant, string> = {
+  default:
+    'bg-slate-800 border border-slate-700 rounded-xl',
+  interactive:
+    'bg-slate-800 border border-slate-700 rounded-xl cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:border-slate-600',
+  elevated:
+    'bg-slate-800 border border-slate-700 rounded-xl shadow-lg shadow-black/10',
+  bordered:
+    'bg-transparent border border-slate-700 rounded-xl',
+};
+
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = 'default', interactive, children, ...props }, ref) => {
+  ({ className, variant = 'default', animated, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn(
-          'bg-slate-800 border border-slate-700 rounded-xl',
-          'transition-all duration-200',
-          variant === 'interactive' && 'hover:shadow-lg hover:border-slate-600 hover:scale-[1.01]',
-          className
+          variantStyles[variant],
+          'transition-all duration-200 ease-out',
+          animated && 'animate-fade-in',
+          className,
         )}
         {...props}
       >
         {children}
       </div>
     );
-  }
+  },
 );
 
 Card.displayName = 'Card';
 
-interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {}
+/* ── Card sub-components ── */
+
+interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  action?: ReactNode;
+}
 
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
-  ({ className, children, ...props }, ref) => (
+  ({ className, action, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('px-6 py-4 border-b border-slate-700', className)}
+      className={cn(
+        'px-6 py-4 border-b border-slate-700 flex items-center justify-between gap-4',
+        className,
+      )}
       {...props}
     >
-      {children}
+      <div className="flex-1">{children}</div>
+      {action && <div className="flex-shrink-0">{action}</div>}
     </div>
-  )
+  ),
 );
 
 CardHeader.displayName = 'CardHeader';
@@ -49,14 +69,10 @@ interface CardContentProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('px-6 py-4', className)}
-      {...props}
-    >
+    <div ref={ref} className={cn('px-6 py-4', className)} {...props}>
       {children}
     </div>
-  )
+  ),
 );
 
 CardContent.displayName = 'CardContent';
@@ -72,7 +88,7 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     >
       {children}
     </div>
-  )
+  ),
 );
 
 CardFooter.displayName = 'CardFooter';

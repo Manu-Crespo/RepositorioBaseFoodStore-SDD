@@ -91,3 +91,56 @@ El sistema DEBE proporcionar componentes de estado vacío que coincidan con la e
 #### Escenario: Display de estado vacío
 - **CUANDO** se muestra sin datos o resultados vacíos
 - **ENTONCES** el componente usa icono muted, texto descriptivo en gris, y botón CTA opcional
+
+---
+
+## MEJORAS POSTERIORES (merged from frontend-redesign, 2026-05-12)
+
+### Requisito: Glassmorphism para overlays y modales
+El sistema DEBE aplicar efectos glassmorphism (blur + transparencia) en modales, dropdowns, y paneles superpuestos.
+
+#### Escenario: Modal con glass effect
+- **CUANDO** se abre un modal
+- **ENTONCES** el contenido usa fondo `bg-slate-800/80` con `backdrop-blur-md` para efecto glass
+
+### Requisito: Animaciones de transición en todos los elementos interactivos
+El sistema DEBE agregar transiciones suaves (150-300ms) en hover, focus, active de todos los elementos interactivos.
+
+#### Escenario: Transiciones en botones
+- **CUANDO** un botón cambia de estado (hover/active/disabled)
+- **ENTONCES** todas las propiedades visuales usan `transition-all duration-200 ease-out` para cambios suaves
+
+### Requisito: Focus rings consistentes con animación
+El sistema DEBE aplicar focus rings visibles con animación suave en todos los elementos interactivos.
+
+#### Escenario: Focus ring animado en inputs
+- **CUANDO** un input recibe foco
+- **ENTONCES** el anillo ámbar aparece con `transition-all duration-150` en lugar de instantáneo
+
+### Requisito: Nuevos tokens de color para superficies
+El sistema DEBE agregar tokens semánticos para superficies elevadas (dropdown, modal, tooltip) con jerarquía de profundidad.
+
+#### Escenario: Token para superficie elevated
+- **CUANDO** se renderiza un dropdown, modal o tooltip
+- **ENTONCES** usa `bg-slate-800` con border `border-slate-600` y shadow `shadow-xl` para diferenciarse de superficies base
+
+### Requisito: Scrollbar personalizado más estilizado
+El scrollbar personalizado DEBE refinarse con bordes redondeados y hover state para mejor experiencia visual.
+
+#### Escenario: Scrollbar thumb con hover
+- **CUANDO** el usuario pasa el cursor sobre el scrollbar
+- **ENTONCES** el thumb cambia de `bg-slate-600` a `bg-slate-500` con transición de 150ms
+
+### Requisito: Estados de carga con skeleton shimmer
+Los estados de carga DEBEN usar skeleton screens con shimmer animation en lugar de spinners genéricos.
+
+#### Escenario: Skeleton loading en cards
+- **CUANDO** contenido tipo card está cargando
+- **ENTONCES** se muestra skeleton con shimmer animation instead of spinner
+
+### Requisito: Estados vacíos con icono decorativo
+Los estados vacíos DEBEN incluir iconos decorativos SVG grandes, mensaje claro, y CTA opcional.
+
+#### Escenario: Estado vacío decorativo
+- **CUANDO** se muestra sin datos o resultados vacíos
+- **ENTONCES** el componente usa icono SVG decorativo grande, texto descriptivo en gris, y botón CTA opcional

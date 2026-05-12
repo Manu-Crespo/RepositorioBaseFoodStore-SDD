@@ -106,7 +106,7 @@ export function AdminIngredientsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Ingredient list */}
-        <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-lg p-4">
+        <div className="lg:col-span-2">
           <IngredientList
             ingredients={ingredients}
             isLoading={isLoading}

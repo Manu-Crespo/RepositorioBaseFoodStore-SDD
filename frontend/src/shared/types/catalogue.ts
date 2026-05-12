@@ -3,6 +3,12 @@
 import type { CategoryResponse } from './category';
 import type { Allergen } from './ingredient';
 
+export interface IngredientSummary {
+  id: string;
+  name: string;
+  is_allergen: boolean;
+}
+
 export interface CatalogueProduct {
   id: string;
   name: string;
@@ -10,6 +16,7 @@ export interface CatalogueProduct {
   price: number;
   stock: number;
   categories: Pick<CategoryResponse, 'id' | 'name'>[];
+  ingredients: IngredientSummary[];
   allergens: Allergen[];
   created_at: string;
   updated_at: string;

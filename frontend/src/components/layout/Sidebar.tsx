@@ -57,8 +57,9 @@ function SidebarItem({ item }: { item: NavigationItem }) {
   if (item.children && item.children.length > 0) {
     return (
       <div className="space-y-1">
-        <div className="px-3 py-2 text-sm font-semibold text-slate-400 uppercase tracking-wider">
-          {item.label}
+        <div className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-400 uppercase tracking-wider">
+          {item.icon && <span className="w-5 h-5 flex-shrink-0">{item.icon}</span>}
+          <span>{item.label}</span>
         </div>
         {item.children.map((child, idx) => (
           <SidebarItem key={idx} item={child} />

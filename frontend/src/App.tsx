@@ -12,6 +12,8 @@ import { AdminProductsPage } from './pages/AdminProductsPage';
 import { CataloguePage } from './pages/CataloguePage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { AccessDeniedPage } from './pages/AccessDeniedPage';
+import { HomePage } from './pages/HomePage';
+import { CartPage } from './pages/CartPage';
 import './App.css';
 
 function App() {
@@ -118,24 +120,6 @@ function App() {
         <Route path="/access-denied" element={<AccessDeniedPage />} />
       </Routes>
     </BrowserRouter>
-  );
-}
-
-function HomePage() {
-  return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <h2 className="text-3xl font-display font-bold mb-4 text-slate-100">Welcome to Food Store</h2>
-      <p className="text-slate-400">Your favorite food delivery app</p>
-    </main>
-  );
-}
-
-function CartPage() {
-  return (
-    <div className="p-8">
-      <h2 className="text-2xl font-display font-bold text-slate-100 mb-4">Cart Page</h2>
-      <p className="text-slate-400">Your shopping cart is empty</p>
-    </div>
   );
 }
 

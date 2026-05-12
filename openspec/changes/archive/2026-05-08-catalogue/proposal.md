@@ -29,9 +29,40 @@ El sistema actual tiene los route guards pero carece de una navegación visual a
 - CSS: Nueva capa de estilos base con tema oscuro
 - Rutas: Protección por rol integrada con el layout
 
-### Stores
+---
 
-**authStore enhancements requeridos:**
+## Frontend Redesign — Complemento (mergeado 2026-05-12)
+
+### Why
+
+El frontend actual tiene una base funcional sólida (tema oscuro, layouts por rol, componentes básicos) pero carece del nivel de pulido visual, fluidez y detalle que una food store moderna debería transmitir. Las transiciones son planas, faltan micro-interacciones, los componentes no tienen estados ricos (hover, active, focus, disabled, loading, empty, error), y la arquitectura FSD quedó incompleta con directorios `entities/`, `features/` y `widgets/` vacíos. Es momento de llevar la experiencia de usuario al siguiente nivel: fluido, detallista, responsive y visualmente impactante.
+
+### What Changes (adicionales)
+
+- **Evolución del tema visual**: refinar colores, sombras, radios y efectos para un acabado premium (glassmorphism, soft UI, micro-interacciones)
+- **Biblioteca de componentes UI pulida**: estados completos (hover, active, disabled, focus, loading, error, empty), animaciones suaves (150-300ms con spring physics), accesibilidad WCAG AA
+- **Páginas rediseñadas**: cada página existente recibe layout refinado con jerarquía visual clara
+- **Páginas inline migradas**: HomePage, CartPage, OrdersPage, ProfilePage, AdminPage, AdminDashboard se mueven de App.tsx a archivos individuales
+- **Sistema de animaciones y transiciones**: micro-interacciones, skeleton screens, loading states con shimmer
+- **Responsive perfeccionado**: breakpoints 375/768/1024/1440, touch targets ≥44px
+- **Arquitectura FSD completada**: se pueblan entities/, features/, widgets/
+- **Rendimiento UI**: lazy loading, React.lazy + Suspense, React.memo
+
+### New Capabilities (adicionales)
+
+- `component-library`: Biblioteca de componentes UI premium con estados completos, animaciones y accesibilidad
+- `page-redesign`: Rediseño visual completo de cada página del sistema
+- `animation-system`: Sistema cohesivo de animaciones y micro-interacciones
+- `fsd-architecture`: Completar la arquitectura Feature-Sliced Design
+
+### Modified Capabilities (extendidas)
+
+- `visual-theme`: Evolucionado con glassmorphism, sombras, transiciones premium
+- `navigation-layout`: Mejorado con micro-interacciones, breadcrumbs, sidebar colapsable
+
+---
+
+### Stores
 
 | Campo Nuevo | Tipo | Propósito |
 |-------------|------|-----------|

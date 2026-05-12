@@ -1,11 +1,12 @@
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '../../shared/utils/cn';
 import { Button } from './Button';
+import { AnimatedMount } from './AnimatedMount';
 
 interface EmptyStateProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
   description?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   action?: {
     label: string;
     onClick: () => void;
@@ -21,32 +22,34 @@ export function EmptyState({
   ...props
 }: EmptyStateProps) {
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center py-12 px-4 text-center',
-        className
-      )}
-      {...props}
-    >
-      {icon && (
-        <div className="mb-4 text-slate-500">
-          {icon}
-        </div>
-      )}
-      <h3 className="text-lg font-semibold text-slate-200 mb-2">
-        {title}
-      </h3>
-      {description && (
-        <p className="text-sm text-slate-500 mb-6 max-w-md">
-          {description}
-        </p>
-      )}
-      {action && (
-        <Button onClick={action.onClick}>
-          {action.label}
-        </Button>
-      )}
-    </div>
+    <AnimatedMount variant="fade-in">
+      <div
+        className={cn(
+          'flex flex-col items-center justify-center py-12 px-4 text-center',
+          className,
+        )}
+        {...props}
+      >
+        {icon && (
+          <div className="mb-4 text-slate-500 [&>svg]:w-16 [&>svg]:h-16">
+            {icon}
+          </div>
+        )}
+        <h3 className="text-lg font-semibold text-slate-200 mb-2">
+          {title}
+        </h3>
+        {description && (
+          <p className="text-sm text-slate-500 mb-6 max-w-md">
+            {description}
+          </p>
+        )}
+        {action && (
+          <Button onClick={action.onClick}>
+            {action.label}
+          </Button>
+        )}
+      </div>
+    </AnimatedMount>
   );
 }
 

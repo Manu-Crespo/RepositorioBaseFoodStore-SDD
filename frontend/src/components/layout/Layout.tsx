@@ -12,7 +12,7 @@ export function Layout({ showSidebar = false }: { showSidebar?: boolean }) {
   return (
     <div className="min-h-screen bg-dark-900">
       <Header onMenuToggle={hasSidebar ? () => setSidebarOpen(true) : undefined} />
-      <div className="flex">
+      <div className="flex pt-16">
         {hasSidebar && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
         <main className={`flex-1 ${hasSidebar ? 'md:ml-64 ml-0' : ''} p-4 md:p-6`}>
           <Outlet />

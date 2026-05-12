@@ -203,7 +203,7 @@ export function ProductForm({
           {flatCategories.length === 0 ? (
             <p className="text-sm text-gray-400">No hay categorías disponibles</p>
           ) : (
-            flatCategories.map((cat) => (
+            flatCategories.filter((cat) => cat.depth > 0).map((cat) => (
               <label
                 key={cat.id}
                 className={`flex items-center gap-2 p-1 rounded cursor-pointer hover:bg-gray-50 ${
