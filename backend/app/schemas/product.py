@@ -54,8 +54,8 @@ class ProductUpdate(BaseModel):
 class ProductStockUpdate(BaseModel):
     """Schema for updating product stock."""
 
-    operation: str = Field(..., pattern="^(add|remove)$")
-    quantity: int = Field(..., gt=0)
+    operation: str = Field(..., pattern="^(set|add|remove)$")
+    quantity: int = Field(..., ge=0)
 
 
 class CategorySummary(BaseModel):

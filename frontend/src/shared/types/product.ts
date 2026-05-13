@@ -54,6 +54,6 @@ export interface ProductFilter {
 }
 
 export interface ProductStockUpdate {
-  stock: number;
-  operation?: 'set' | 'add' | 'remove';
+  quantity: number;
+  operation: 'set' | 'add' | 'remove';
 }

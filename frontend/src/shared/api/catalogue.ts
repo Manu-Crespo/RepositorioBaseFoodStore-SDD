@@ -11,8 +11,31 @@ import type {
 } from '../types';
 
 export const catalogueApi = {
-  /** Get products with filters, search, and pagination. */
-  getProducts: async (params?: CatalogueFilters): Promise<CatalogueProductListResponse> => {
+  getProducts: async (filters?: CatalogueFilters): Promise<CatalogueProductListResponse> => {
+    // Transform filters to API parameters
+    const params: Record<string, any> = { ...filters };
+    
+    // Handle sorting: sort_by + sort_order -> sort
+    if (filters?.sort_by) {
+      const order = filters.sort_order === 'asc' ? 'asc' : 'desc';
+      if (filters.sort_by === 'price') {
+        params.sort = order === 'asc' ? 'price_asc' : 'price_desc';
+      } else if (filters.sort_by === 'name') {
+        params.sort = order === 'asc' ? 'name_asc' : 'name_desc';
+      } else if (filters.sort_by === 'created_at') {
+        params.sort = 'newest';
+      }
+      
+      // Remove original fields
+      delete params.sort_by;
+      delete params.sort_order;
+    }
+
+    // Handle allergens array -> comma separated string
+    if (Array.isArray(filters?.exclude_allergens) && filters.exclude_allergens.length > 0) {
+      params.exclude_allergens = filters.exclude_allergens.join(',');
+    }
+
     const { data } = await api.get('/api/catalogue/products', { params });
     return data;
   },

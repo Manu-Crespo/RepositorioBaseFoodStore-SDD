@@ -109,8 +109,8 @@ async def test_catalogue_sort_price_asc(client: AsyncClient, db_session: AsyncSe
     response = await client.get("/api/catalogue/products?sort=price_asc")
     data = response.json()
 
-    assert data["data"][0]["price"] == "5.00"
-    assert data["data"][1]["price"] == "20.00"
+    assert data["data"][0]["price"] == 5.00
+    assert data["data"][1]["price"] == 20.00
 
 
 @pytest.mark.asyncio

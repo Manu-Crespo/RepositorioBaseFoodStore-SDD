@@ -26,6 +26,16 @@ class CategoryRepository(BaseRepository[Category]):
         result = await self._session.execute(query)
         return result.scalar_one_or_none()
 
+    async def get_with_products(self, id: str) -> Category | None:
+        """Get category with its products loaded."""
+        query = (
+            select(Category)
+            .where(Category.id == id)
+            .options(selectinload(Category.products))
+        )
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
     async def get_tree(self, parent_id: str | None = None) -> list[Category]:
         """Get categories in tree structure."""
         query = select(Category).order_by(Category.order, Category.name)

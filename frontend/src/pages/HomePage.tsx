@@ -136,74 +136,96 @@ export function HomePage() {
   return (
     <div className="min-h-screen">
       {/* ========== HERO SECTION ========== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900/40">
-        {/* Decorative blobs */}
+      <section className="relative overflow-hidden bg-slate-900 border-b border-slate-800/50">
+        {/* Advanced decorative background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-amber-500/10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-amber-400/5 blur-3xl" />
+          {/* Main mesh gradients */}
+          <div className="absolute -top-[10%] -right-[5%] w-[60%] h-[80%] rounded-full bg-amber-600/10 blur-[120px] animate-pulse" />
+          <div className="absolute top-[20%] -left-[10%] w-[50%] h-[70%] rounded-full bg-amber-500/5 blur-[100px]" />
+          <div className="absolute bottom-0 right-[20%] w-[40%] h-[40%] rounded-full bg-slate-800 blur-[80px]" />
+          
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.03] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" 
+               style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.2) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-44">
           <AnimatedMount variant="slide-up">
-            <div className="max-w-3xl">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-6">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                Pedí online, retirá en local
+            <div className="max-w-4xl">
+              {/* Premium Badge */}
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-amber-400 text-xs font-black uppercase tracking-widest mb-8 shadow-xl">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                Sabor Artesanal & Envío Rápido
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-slate-100 leading-tight">
-                Descubrí los mejores{' '}
-                <span className="bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">
-                  sabores
+              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-black text-white leading-[0.9] tracking-tighter mb-8">
+                Lo mejor del <br />
+                <span className="bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500 bg-clip-text text-transparent drop-shadow-sm">
+                  sabor local
                 </span>
               </h1>
 
-              <p className="mt-4 text-lg sm:text-xl text-slate-400 max-w-2xl leading-relaxed">
-                Explorá nuestro catálogo de productos frescos y deliciosos.
-                Hacé tu pedido online y retiralo cuando quieras.
+              <p className="mt-4 text-xl sm:text-2xl text-slate-400 max-w-2xl leading-relaxed font-medium">
+                Ingredientes frescos, recetas clásicas y la comodidad de pedir 
+                desde donde estés. <span className="text-slate-200">Tu próxima comida favorita te espera.</span>
               </p>
 
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <div className="mt-12 flex flex-col sm:flex-row gap-5">
                 <Link
                   to="/catalogo"
-                  className="group inline-flex items-center justify-center gap-2 px-8 py-3.5
-                    bg-gradient-to-r from-amber-500 to-amber-600
-                    hover:from-amber-400 hover:to-amber-500
-                    font-bold rounded-xl
-                    border border-amber-400/20 hover:border-amber-300/40
-                    shadow-lg shadow-amber-500/25 hover:shadow-amber-400/40
-                    hover:scale-[1.02] active:scale-[0.98]
-                    transition-all duration-200 ease-out
-                    focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                  className="group relative inline-flex items-center justify-center gap-3 px-10 py-4
+                    bg-amber-500 text-slate-950 font-black rounded-2xl
+                    hover:bg-amber-400 hover:scale-[1.03] active:scale-[0.97]
+                    transition-all duration-300 ease-out
+                    shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)]
+                    focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-4 focus:ring-offset-slate-900"
                 >
-                  <span className="text-white [-webkit-text-stroke:0.5px_#000]">Ver Catálogo</span>
-                  <span className="transition-transform duration-200 group-hover:translate-x-1 text-white drop-shadow-[0_0_1px_rgba(0,0,0,0.9)]">
+                  <span className="text-lg uppercase tracking-tight text-slate-950">Explorar Menú</span>
+                  <div className="p-1 bg-black/10 rounded-full group-hover:translate-x-1 transition-transform text-slate-950">
                     <ArrowRightIcon />
-                  </span>
+                  </div>
                 </Link>
 
-                {categories.length > 0 && (
-                  <a
-                    href="#categorias"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5
-                      bg-slate-800/80 border border-slate-700/60
-                      hover:bg-slate-700/80 hover:border-slate-600
-                      text-slate-200 font-medium rounded-xl
-                      transition-all duration-200
-                      focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-                  >
-                    Explorar Categorías
-                  </a>
-                )}
+
+                <a
+                  href="#categorias"
+                  className="inline-flex items-center justify-center gap-2 px-10 py-4
+                    bg-slate-800/40 backdrop-blur-md border border-slate-700/50
+                    hover:bg-slate-700/60 hover:border-amber-500/30
+                    text-slate-100 font-bold rounded-2xl
+                    transition-all duration-300
+                    focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-4 focus:ring-offset-slate-900"
+                >
+                  Categorías
+                </a>
+              </div>
+              
+              {/* Stats/Features sutiles */}
+              <div className="mt-16 pt-10 border-t border-slate-800/50 flex flex-wrap gap-x-12 gap-y-6">
+                <div className="flex flex-col">
+                  <span className="text-3xl font-black text-white">15min</span>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Entrega promedio</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-black text-white">100%</span>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Fresco & Natural</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-black text-white">+5k</span>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Clientes felices</span>
+                </div>
               </div>
             </div>
           </AnimatedMount>
         </div>
 
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900 to-transparent" />
+        {/* Bottom decorative fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent" />
       </section>
+
 
       {/* ========== POPULAR PRODUCTS SECTION ========== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

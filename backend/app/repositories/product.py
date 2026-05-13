@@ -131,17 +131,16 @@ class ProductRepository(BaseRepository[Product]):
         if not allergen_ingredient_ids:
             return []
 
-        # Get products that DON'T use any of those ingredients
-        # Exclude products that have ANY of the allergen ingredients
-        subquery = (
-            select(ProductIngredient.product_id)
-            .where(ProductIngredient.ingredient_id.in_(allergen_ingredient_ids))
-        )
-
         query = (
             select(Product)
-            .where(Product.id.not_in(subquery))
         )
+        if exclude_allergens:
+            # Get products that DON'T use any of those ingredients
+            subquery = (
+                select(ProductIngredient.product_id)
+                .where(ProductIngredient.ingredient_id.in_(allergen_ingredient_ids))
+            )
+            query = query.where(Product.id.not_in(subquery))
         if hasattr(Product, "deleted_at"):
             query = query.where(Product.deleted_at.is_(None))
 
@@ -198,81 +197,83 @@ class ProductRepository(BaseRepository[Product]):
         """Get products for catalogue with all filters applied in SQL."""
         from app.models.category import Category
         from app.models.ingredient import Ingredient
+        import traceback
+        import os
 
-        base_conditions = []
-        if hasattr(Product, "deleted_at"):
-            base_conditions.append(Product.deleted_at.is_(None))
-        base_conditions.append(Product.stock > 0)
+        try:
+            # 1. Build the base query with filters
+            query = select(Product).where(Product.stock > 0)
+            if hasattr(Product, "deleted_at"):
+                query = query.where(Product.deleted_at.is_(None))
 
-        # Category filter
-        category_ids = [category_id] if category_id else []
-        if category_id and include_children:
-            children_query = select(Category.id).where(Category.parent_id == category_id)
-            result = await self._session.execute(children_query)
-            category_ids.extend([row[0] for row in result.fetchall()])
-
-        # Build query with filters and load relations to avoid lazy loading errors
-        query = select(Product).where(*base_conditions).options(
-            selectinload(Product.categories),
-            selectinload(Product.product_ingredients).selectinload(ProductIngredient.ingredient)
-        )
-
-        if category_ids:
-            subquery = (
-                select(ProductCategory.product_id)
-                .where(ProductCategory.category_id.in_(category_ids))
-            )
-            query = query.where(Product.id.in_(subquery))
-
-        # Allergens filter
-        if exclude_allergens:
-            allergen_query = select(Ingredient.id).where(
-                Ingredient.allergens.overlaps(exclude_allergens),
-            )
-            result = await self._session.execute(allergen_query)
-            allergen_ids = [row[0] for row in result.fetchall()]
-
-            if allergen_ids:
-                allergen_subquery = (
-                    select(ProductIngredient.product_id)
-                    .where(ProductIngredient.ingredient_id.in_(allergen_ids))
+            # Category filter
+            if category_id:
+                category_ids = [category_id]
+                if include_children:
+                    children_query = select(Category.id).where(Category.parent_id == category_id)
+                    children_result = await self._session.execute(children_query)
+                    category_ids.extend(children_result.scalars().all())
+                
+                category_subquery = select(ProductCategory.product_id).where(
+                    ProductCategory.category_id.in_(category_ids)
                 )
-                query = query.where(Product.id.not_in(allergen_subquery))
+                query = query.where(Product.id.in_(category_subquery))
 
-        # Price filter
-        if min_price is not None:
-            query = query.where(Product.price >= min_price)
-        if max_price is not None:
-            query = query.where(Product.price <= max_price)
+            # Allergens filter
+            if exclude_allergens and any(a.strip() for a in exclude_allergens):
+                # Clean empty allergens
+                clean_allergens = [a.strip() for a in exclude_allergens if a.strip()]
+                if clean_allergens:
+                    # Use native PostgreSQL overlap operator '&&' for maximum reliability
+                    allergen_subquery = (
+                        select(ProductIngredient.product_id)
+                        .join(Ingredient, Ingredient.id == ProductIngredient.ingredient_id)
+                        .where(Ingredient.allergens.op("&&")(clean_allergens))
+                    )
+                    query = query.where(Product.id.not_in(allergen_subquery))
 
-        # Search filter
-        if search:
-            query = query.where(Product.name.ilike(f"%{search}%"))
+            # Price and Search
+            if min_price is not None:
+                query = query.where(Product.price >= min_price)
+            if max_price is not None:
+                query = query.where(Product.price <= max_price)
+            if search:
+                query = query.where(Product.name.ilike(f"%{search}%"))
 
-        # Get total count before pagination
-        count_stmt = select(func.count()).select_from(query.order_by(None).subquery())
-        count_result = await self._session.execute(count_stmt)
-        total = count_result.scalar() or 0
+            # 2. Get total count
+            count_stmt = select(func.count(Product.id)).select_from(query.subquery())
+            count_result = await self._session.execute(count_stmt)
+            total = count_result.scalar() or 0
 
-        # Sort
-        if sort == "price_asc":
-            query = query.order_by(Product.price.asc())
-        elif sort == "price_desc":
-            query = query.order_by(Product.price.desc())
-        elif sort == "name_asc":
-            query = query.order_by(Product.name.asc())
-        elif sort == "newest":
-            query = query.order_by(Product.created_at.desc())
-        else:
-            query = query.order_by(Product.name.asc())
+            # 3. Add sorting
+            if sort == "price_asc":
+                query = query.order_by(Product.price.asc())
+            elif sort == "price_desc":
+                query = query.order_by(Product.price.desc())
+            elif sort == "name_asc":
+                query = query.order_by(Product.name.asc())
+            elif sort == "name_desc":
+                query = query.order_by(Product.name.desc())
+            elif sort == "newest":
+                query = query.order_by(Product.created_at.desc())
+            else:
+                query = query.order_by(Product.name.asc())
 
-        # Pagination
-        query = query.offset(skip).limit(limit)
+            # 4. Add pagination and eager loading
+            final_query = query.offset(skip).limit(limit).options(
+                selectinload(Product.categories),
+                selectinload(Product.product_ingredients).selectinload(ProductIngredient.ingredient)
+            )
 
-        result = await self._session.execute(query)
-        products = list(result.scalars().all())
+            result = await self._session.execute(final_query)
+            products = list(result.scalars().all())
 
-        return products, total
+            return products, total
+        except Exception as e:
+            # Log the error to a file in the current directory
+            with open("debug_error.log", "a") as f:
+                f.write(f"\n--- ERROR AT {traceback.format_exc()} ---\n")
+            raise e
 
     async def get_admin_filtered(
         self,
@@ -352,7 +353,9 @@ class ProductRepository(BaseRepository[Product]):
         if not product:
             return None
 
-        if operation == "add":
+        if operation == "set":
+            product.stock = quantity
+        elif operation == "add":
             product.stock += quantity
         elif operation == "remove":
             if product.stock < quantity:

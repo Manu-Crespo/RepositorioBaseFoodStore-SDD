@@ -3,7 +3,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Self
 
-from sqlalchemy import String, DateTime, ARRAY, Boolean
+from sqlalchemy import String, DateTime, Boolean
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin

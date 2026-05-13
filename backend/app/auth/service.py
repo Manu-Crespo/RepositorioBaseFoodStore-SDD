@@ -163,4 +163,6 @@ def create_user(email: str, password: str, first_name: str, last_name: str, phon
         phone=phone,
         role=role,
         is_active=True,
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )

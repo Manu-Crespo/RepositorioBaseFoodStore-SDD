@@ -194,13 +194,28 @@ export function AdminProductsPage() {
                       </td>
                       <td className="px-4 py-3 text-slate-200">${product.price.toFixed(2)}</td>
                       <td className="px-4 py-3">
-                        <input
-                          type="number"
-                          min="0"
-                          value={product.stock}
-                          onChange={(e) => handleStockUpdate(product.id, parseInt(e.target.value) || 0)}
-                          className="w-20 px-2 py-1 bg-slate-700 border border-slate-600 text-slate-100 rounded text-center"
-                        />
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => updateStock(product.id, 1, 'remove')}
+                            className="w-6 h-6 flex items-center justify-center bg-slate-700 border border-slate-600 text-slate-300 rounded hover:bg-slate-600 disabled:opacity-50"
+                            disabled={product.stock <= 0}
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min="0"
+                            value={product.stock}
+                            onChange={(e) => handleStockUpdate(product.id, parseInt(e.target.value) || 0)}
+                            className="w-16 px-2 py-1 bg-slate-700 border border-slate-600 text-slate-100 rounded text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <button
+                            onClick={() => updateStock(product.id, 1, 'add')}
+                            className="w-6 h-6 flex items-center justify-center bg-slate-700 border border-slate-600 text-slate-300 rounded hover:bg-slate-600"
+                          >
+                            +
+                          </button>
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">

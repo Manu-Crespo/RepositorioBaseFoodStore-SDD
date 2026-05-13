@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.unit_of_work import UnitOfWork, get_unit_of_work
 from app.models.user import User
 from app.auth.rbac import require_stock_or_admin, require_admin_only
 from app.services.product import ProductService
@@ -25,11 +26,11 @@ router = APIRouter(prefix="/products", tags=["admin-products"])
 )
 async def create_product(
     product_data: ProductCreate,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """Create a new product."""
-    service = ProductService(db)
+    service = ProductService(uow.session)
     try:
         return await service.create(product_data)
     except ValueError as e:
@@ -46,11 +47,11 @@ async def list_products(
     max_price: float | None = None,
     search: str | None = None,
     low_stock: bool | None = None,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """List all products with filters."""
-    service = ProductService(db)
+    service = ProductService(uow.session)
     params = PaginationParams(page=page, limit=limit)
     products, total = await service.get_all(
         params,
@@ -72,11 +73,11 @@ async def list_products(
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(
     product_id: str,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """Get a specific product."""
-    service = ProductService(db)
+    service = ProductService(uow.session)
     product = await service.get(product_id)
     if not product:
         raise HTTPException(
@@ -90,11 +91,11 @@ async def get_product(
 async def update_product(
     product_id: str,
     product_data: ProductUpdate,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """Update a product."""
-    service = ProductService(db)
+    service = ProductService(uow.session)
     product = await service.update(product_id, product_data)
     if not product:
         raise HTTPException(
@@ -108,11 +109,11 @@ async def update_product(
 async def update_stock(
     product_id: str,
     stock_data: ProductStockUpdate,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """Update product stock."""
-    service = ProductService(db)
+    service = ProductService(uow.session)
     try:
         product = await service.update_stock(
             product_id, stock_data.operation, stock_data.quantity
@@ -130,11 +131,11 @@ async def update_stock(
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
     product_id: str,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_admin_only()),
 ):
     """Delete a product (soft delete)."""
-    service = ProductService(db)
+    service = ProductService(uow.session)
     try:
         deleted = await service.delete(product_id)
         if not deleted:

@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.unit_of_work import UnitOfWork, get_unit_of_work
 from app.models.user import User
 from app.auth.rbac import require_stock_or_admin, require_admin_only
 from app.services.ingredient import IngredientService
@@ -24,11 +25,11 @@ router = APIRouter(prefix="/ingredients", tags=["admin-ingredients"])
 )
 async def create_ingredient(
     ingredient_data: IngredientCreate,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """Create a new ingredient."""
-    service = IngredientService(db)
+    service = IngredientService(uow.session)
     try:
         return await service.create(ingredient_data)
     except ValueError as e:
@@ -40,11 +41,11 @@ async def list_ingredients(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     allergen: str | None = None,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """List all ingredients with pagination."""
-    service = IngredientService(db)
+    service = IngredientService(uow.session)
     params = PaginationParams(page=page, limit=limit)
     ingredients, total = await service.get_all(params, allergen)
     return IngredientListResponse(
@@ -58,11 +59,11 @@ async def list_ingredients(
 @router.get("/{ingredient_id}", response_model=IngredientResponse)
 async def get_ingredient(
     ingredient_id: str,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """Get a specific ingredient."""
-    service = IngredientService(db)
+    service = IngredientService(uow.session)
     ingredient = await service.get(ingredient_id)
     if not ingredient:
         raise HTTPException(
@@ -76,11 +77,11 @@ async def get_ingredient(
 async def update_ingredient(
     ingredient_id: str,
     ingredient_data: IngredientUpdate,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_stock_or_admin()),
 ):
     """Update an ingredient."""
-    service = IngredientService(db)
+    service = IngredientService(uow.session)
     try:
         ingredient = await service.update(ingredient_id, ingredient_data)
         if not ingredient:
@@ -96,11 +97,11 @@ async def update_ingredient(
 @router.delete("/{ingredient_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_ingredient(
     ingredient_id: str,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
     current_user: User = Depends(require_admin_only()),
 ):
     """Delete an ingredient (soft delete)."""
-    service = IngredientService(db)
+    service = IngredientService(uow.session)
     try:
         deleted = await service.delete(ingredient_id)
         if not deleted:

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import get_current_user
 from app.auth.service import create_token_pair, create_user, verify_password, verify_token
+from app.unit_of_work import UnitOfWork, get_unit_of_work
 from app.config import settings
 from app.errors.codes import ErrorCode
 from app.models.user import User, UserRole
@@ -14,6 +15,8 @@ from app.database import get_db
 from app.schemas.auth import (
     LoginRequest,
     LogoutRequest,
+    PasswordChange,
+    ProfileUpdate,
     RefreshRequest,
     TokenResponse,
     UserCreate,
@@ -32,11 +35,11 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 async def register(
     request: Request,
     user_data: UserCreate,
-    db: AsyncSession = Depends(get_db),
+    uow: UnitOfWork = Depends(get_unit_of_work),
 ):
     """Register a new user."""
     # Check if email already exists
-    result = await db.execute(
+    result = await uow.session.execute(
         select(User).where(User.email == user_data.email.lower().strip())
     )
     existing_user = result.scalar_one_or_none()
@@ -57,9 +60,9 @@ async def register(
         last_name=user_data.last_name,
         phone=user_data.phone,
     )
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
+    uow.session.add(new_user)
+    await uow.session.flush()
+    # Commit handled by UoW dependency
 
     return new_user
 
@@ -188,6 +191,18 @@ async def refresh(
             },
         )
 
+    # Check if password was changed after token was issued (token invalidation)
+    if user.password_changed_at:
+        token_iat = payload.get("iat")
+        if token_iat and token_iat < int(user.password_changed_at.timestamp()):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={
+                    "code": "PASSWORD_CHANGED",
+                    "message": "Password was changed, please login again",
+                },
+            )
+
     # Create new token pair (rotation)
     access_token, new_refresh = create_token_pair(user)
 
@@ -219,3 +234,73 @@ async def get_current_user(
 ):
     """Get current authenticated user."""
     return current_user
+
+
+# === Profile Endpoints ===
+
+@router.get("/profile", response_model=UserResponse)
+async def get_profile(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get the current user's profile."""
+    return current_user
+
+
+@router.put("/profile", response_model=UserResponse)
+async def update_profile(
+    profile_data: ProfileUpdate,
+    uow: UnitOfWork = Depends(get_unit_of_work),
+    current_user: User = Depends(get_current_user),
+):
+    """Update the current user's profile data."""
+    # Update only provided fields
+    if profile_data.first_name is not None:
+        current_user.first_name = profile_data.first_name.strip()
+    if profile_data.last_name is not None:
+        current_user.last_name = profile_data.last_name.strip()
+    if profile_data.phone is not None:
+        current_user.phone = profile_data.phone.strip() if profile_data.phone else None
+
+    # Commit handled by UoW
+
+    return current_user
+
+
+@router.put("/profile/password", status_code=status.HTTP_200_OK)
+async def change_password(
+    password_data: PasswordChange,
+    uow: UnitOfWork = Depends(get_unit_of_work),
+    current_user: User = Depends(get_current_user),
+):
+    """Change the current user's password."""
+    from datetime import datetime, timezone
+    from app.auth.service import hash_password
+
+    # Verify current password
+    if not verify_password(password_data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "code": "INVALID_CURRENT_PASSWORD",
+                "message": "Current password is incorrect",
+            },
+        )
+
+    # Check new password is different from current
+    if verify_password(password_data.new_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "code": "SAME_PASSWORD",
+                "message": "New password must be different from current password",
+            },
+        )
+
+    # Update password and set password_changed_at
+    current_user.password_hash = hash_password(password_data.new_password)
+    current_user.password_changed_at = datetime.now(timezone.utc)
+
+    # Commit handled by UoW
+
+    return {"message": "Password changed successfully, please login again"}

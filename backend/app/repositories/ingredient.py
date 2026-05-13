@@ -12,6 +12,17 @@ class IngredientRepository(BaseRepository[Ingredient]):
     def __init__(self, session: AsyncSession):
         super().__init__(Ingredient, session)
 
+    async def get_with_products(self, id: str) -> Ingredient | None:
+        """Get ingredient with its products loaded."""
+        from sqlalchemy.orm import selectinload
+        query = (
+            select(Ingredient)
+            .where(Ingredient.id == id)
+            .options(selectinload(Ingredient.products))
+        )
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
     async def get_by_name(self, name: str) -> Ingredient | None:
         """Get ingredient by exact name (case-insensitive)."""
         query = select(Ingredient).where(
@@ -45,9 +56,9 @@ class IngredientRepository(BaseRepository[Ingredient]):
         if hasattr(Ingredient, "deleted_at"):
             query = query.where(Ingredient.deleted_at.is_(None))
 
-        # PostgreSQL: check if array overlaps
-        for allergen in allergens:
-            query = query.where(Ingredient.allergens.overlaps([allergen]))
+        # PostgreSQL: check if array overlaps (ANY of the allergens)
+        if allergens:
+            query = query.where(Ingredient.allergens.overlaps(allergens))
 
         result = await self._session.execute(query)
         return list(result.scalars().all())
@@ -58,9 +69,9 @@ class IngredientRepository(BaseRepository[Ingredient]):
         if hasattr(Ingredient, "deleted_at"):
             query = query.where(Ingredient.deleted_at.is_(None))
 
-        # Exclude ingredients containing any of the allergens
-        for allergen in allergens:
-            query = query.where(~Ingredient.allergens.overlaps([allergen]))
+        # Exclude ingredients containing ANY of the allergens
+        if allergens:
+            query = query.where(~Ingredient.allergens.overlaps(allergens))
 
         result = await self._session.execute(query)
         return list(result.scalars().all())

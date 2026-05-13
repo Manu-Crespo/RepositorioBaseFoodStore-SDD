@@ -1,16 +1,7 @@
-import axios from 'axios';
+import api from './client';
 import type { User } from '../../stores/authStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-export const authApi = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true, // Important for httpOnly cookies
-});
+// The 'api' instance from client.ts already has the base URL and interceptors configured.
 
 // Register endpoint
 interface RegisterData {
@@ -22,7 +13,7 @@ interface RegisterData {
 }
 
 export async function register(data: RegisterData) {
-  const response = await authApi.post('/api/v1/auth/register', data);
+  const response = await api.post('/api/v1/auth/register', data);
   return response.data;
 }
 
@@ -34,7 +25,7 @@ export interface LoginResponse {
 }
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
-  const response = await authApi.post('/api/v1/auth/login', {
+  const response = await api.post('/api/v1/auth/login', {
     email,
     password,
   });
@@ -42,19 +33,50 @@ export async function login(email: string, password: string): Promise<LoginRespo
 }
 
 // Refresh token endpoint
-export async function refreshToken() {
-  const response = await authApi.post('/api/v1/auth/refresh', {});
+export async function refreshToken(token: string) {
+  const response = await api.post('/api/v1/auth/refresh', {
+    refresh_token: token,
+  });
   return response.data;
 }
 
 // Logout endpoint
 export async function logout() {
-  const response = await authApi.post('/api/v1/auth/logout', {});
+  const response = await api.post('/api/v1/auth/logout', {});
   return response.data;
 }
 
 // Get current user endpoint
 export async function getCurrentUser() {
-  const response = await authApi.get('/api/v1/auth/me');
+  const response = await api.get('/api/v1/auth/me');
+  return response.data;
+}
+
+// Get profile endpoint
+export async function getProfile() {
+  const response = await api.get('/api/v1/auth/profile');
+  return response.data;
+}
+
+// Update profile endpoint
+export interface ProfileUpdateData {
+  first_name?: string;
+  last_name?: string;
+  phone?: string | null;
+}
+
+export async function updateProfile(data: ProfileUpdateData) {
+  const response = await api.put('/api/v1/auth/profile', data);
+  return response.data;
+}
+
+// Change password endpoint
+export interface PasswordChangeData {
+  current_password: string;
+  new_password: string;
+}
+
+export async function changePassword(data: PasswordChangeData) {
+  const response = await api.put('/api/v1/auth/profile/password', data);
   return response.data;
 }

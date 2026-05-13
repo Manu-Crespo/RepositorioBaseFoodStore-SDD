@@ -93,7 +93,7 @@ class CategoryService:
 
     async def delete(self, category_id: str) -> bool:
         """Delete a category (soft delete)."""
-        category = await self._repo.get(category_id)
+        category = await self._repo.get_with_products(category_id)
         if not category:
             return False
 

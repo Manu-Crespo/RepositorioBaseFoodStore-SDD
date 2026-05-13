@@ -19,6 +19,7 @@ interface Toast {
 }
 
 interface ToastContextType {
+  toasts: Toast[];
   addToast: (toast: Omit<Toast, 'id'>) => void;
   removeToast: (id: string) => void;
 }
@@ -118,7 +119,7 @@ export function ToastContainer() {
   const ctx = useContext(ToastContext);
   if (!ctx) return null;
 
-  const { toasts, removeToast } = ctx as unknown as { toasts: Toast[]; removeToast: (id: string) => void };
+  const { toasts, removeToast } = ctx;
 
   return (
     <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
@@ -182,7 +183,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
   }, []);
 
   return (
-    <ToastContext.Provider value={{ addToast, removeToast } as unknown as ToastContextType}>
+    <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
       {children}
       <ToastContainer />
     </ToastContext.Provider>

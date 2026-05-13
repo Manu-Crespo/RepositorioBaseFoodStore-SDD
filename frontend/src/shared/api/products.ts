@@ -48,12 +48,12 @@ export const productsApi = {
 
   /** Add stock to a product. */
   addStock: async (id: string, quantity: number): Promise<ProductResponse> => {
-    return productsApi.updateStock(id, { stock: quantity, operation: 'add' });
+    return productsApi.updateStock(id, { quantity, operation: 'add' });
   },
 
   /** Remove stock from a product. */
   removeStock: async (id: string, quantity: number): Promise<ProductResponse> => {
-    return productsApi.updateStock(id, { stock: quantity, operation: 'remove' });
+    return productsApi.updateStock(id, { quantity, operation: 'remove' });
   },
 
   /** Get products by category. */

@@ -88,7 +88,9 @@ async def admin_user(db_session: AsyncSession) -> User:
         id="admin-uuid-123",
         email="admin@test.com",
         password_hash=hash_password("admin123"),
-        role=UserRole.ADMIN,
+        first_name="Admin",
+        last_name="User",
+        role="admin",
         is_active=True
     )
     db_session.add(user)
@@ -106,7 +108,9 @@ async def stock_user(db_session: AsyncSession) -> User:
         id="stock-uuid-456",
         email="stock@test.com",
         password_hash=hash_password("stock123"),
-        role=UserRole.STOCK,
+        first_name="Stock",
+        last_name="Manager",
+        role="stock",
         is_active=True
     )
     db_session.add(user)
@@ -120,11 +124,11 @@ def admin_token(admin_user: User) -> str:
     """Create a JWT token for admin user."""
     payload = {
         "sub": admin_user.id,
-        "role": admin_user.role.value,
+        "role": admin_user.role,
         "exp": datetime.now(timezone.utc) + timedelta(hours=1),
         "iat": datetime.now(timezone.utc),
     }
-    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 @pytest.fixture
@@ -132,11 +136,11 @@ def stock_token(stock_user: User) -> str:
     """Create a JWT token for stock user."""
     payload = {
         "sub": stock_user.id,
-        "role": stock_user.role.value,
+        "role": stock_user.role,
         "exp": datetime.now(timezone.utc) + timedelta(hours=1),
         "iat": datetime.now(timezone.utc),
     }
-    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 @pytest.fixture

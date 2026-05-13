@@ -5,6 +5,8 @@ from typing import Any, AsyncGenerator
 from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+from app.database import get_db
 
 
 class UnitOfWork:
@@ -36,7 +38,7 @@ class UnitOfWork:
         return self._session
 
 
-async def get_unit_of_work(session: AsyncSession) -> AsyncGenerator[UnitOfWork, None]:
+async def get_unit_of_work(session: AsyncSession = Depends(get_db)) -> AsyncGenerator[UnitOfWork, None]:
     """FastAPI dependency for Unit of Work."""
     async with UnitOfWork(session) as uow:
         yield uow

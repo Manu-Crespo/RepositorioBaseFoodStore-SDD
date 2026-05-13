@@ -154,7 +154,7 @@ export function RegisterPage() {
         phone: formData.phone || undefined,
       });
       const data = await loginApi(formData.email, formData.password);
-      login(data.access_token, data.user);
+      login(data.access_token, data.refresh_token, data.user);
       navigate(from, { replace: true });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al registrarse';

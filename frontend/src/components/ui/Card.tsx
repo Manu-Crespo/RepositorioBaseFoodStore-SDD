@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { forwardRef } from 'react';
 import { cn } from '../../shared/utils/cn';
 
-type CardVariant = 'default' | 'interactive' | 'elevated' | 'bordered';
+type CardVariant = 'default' | 'interactive' | 'elevated' | 'bordered' | 'glass';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: CardVariant;
@@ -13,12 +13,15 @@ const variantStyles: Record<CardVariant, string> = {
   default:
     'bg-slate-800 border border-slate-700 rounded-xl',
   interactive:
-    'bg-slate-800 border border-slate-700 rounded-xl cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:border-slate-600',
+    'bg-slate-800 border border-slate-700 rounded-xl cursor-pointer hover:-translate-y-1 hover:shadow-2xl hover:shadow-amber-500/10 hover:border-amber-500/30',
   elevated:
     'bg-slate-800 border border-slate-700 rounded-xl shadow-lg shadow-black/10',
   bordered:
     'bg-transparent border border-slate-700 rounded-xl',
+  glass:
+    'bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-xl shadow-xl',
 };
+
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', animated, children, ...props }, ref) => {
@@ -92,3 +95,19 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
 );
 
 CardFooter.displayName = 'CardFooter';
+
+interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {}
+
+export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
+  ({ className, children, ...props }, ref) => (
+    <h3
+      ref={ref}
+      className={cn('text-lg font-display font-semibold text-slate-100', className)}
+      {...props}
+    >
+      {children}
+    </h3>
+  ),
+);
+
+CardTitle.displayName = 'CardTitle';

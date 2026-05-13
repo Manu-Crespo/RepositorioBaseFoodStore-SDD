@@ -14,111 +14,115 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { AccessDeniedPage } from './pages/AccessDeniedPage';
 import { HomePage } from './pages/HomePage';
 import { CartPage } from './pages/CartPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { ToastProvider } from './components/ui';
 import './App.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Public Routes - No sidebar */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/login"
-            element={
-              <PublicOnlyRoute>
-                <LoginPage />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicOnlyRoute>
-                <RegisterPage />
-              </PublicOnlyRoute>
-            }
-          />
-          {/* Public Catalogue */}
-          <Route path="/catalogo" element={<CataloguePage />} />
-          <Route path="/catalogo/producto/:id" element={<ProductDetailPage />} />
-        </Route>
+      <ToastProvider>
+        <Routes>
+          {/* Public Routes - No sidebar */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/login"
+              element={
+                <PublicOnlyRoute>
+                  <LoginPage />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicOnlyRoute>
+                  <RegisterPage />
+                </PublicOnlyRoute>
+              }
+            />
+            {/* Public Catalogue */}
+            <Route path="/catalogo" element={<CataloguePage />} />
+            <Route path="/catalogo/producto/:id" element={<ProductDetailPage />} />
+          </Route>
 
-        {/* Protected Routes - With sidebar for admin/stock */}
-        <Route element={<AuthLayout />}>
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute allowedRoles={['customer', 'admin']}>
-                <CartPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/orders"
-            element={
-              <ProtectedRoute allowedRoles={['customer', 'admin']}>
-                <OrdersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Protected Routes - With sidebar for admin/stock */}
+          <Route element={<AuthLayout />}>
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute allowedRoles={['customer', 'admin']}>
+                  <CartPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute allowedRoles={['customer', 'admin']}>
+                  <OrdersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <AdminGuard>
-                <AdminPage />
-              </AdminGuard>
-            }
-          />
-          <Route
-            path="/admin/*"
-            element={
-              <AdminGuard>
-                <AdminDashboard />
-              </AdminGuard>
-            }
-          />
+            {/* Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <AdminGuard>
+                  <AdminPage />
+                </AdminGuard>
+              }
+            />
+            <Route
+              path="/admin/*"
+              element={
+                <AdminGuard>
+                  <AdminDashboard />
+                </AdminGuard>
+              }
+            />
 
-          {/* Stock/Admin Management Routes */}
-          <Route
-            path="/admin/categorias"
-            element={
-              <StockGuard>
-                <AdminCategoriesPage />
-              </StockGuard>
-            }
-          />
-          <Route
-            path="/admin/ingredientes"
-            element={
-              <StockGuard>
-                <AdminIngredientsPage />
-              </StockGuard>
-            }
-          />
-          <Route
-            path="/admin/productos"
-            element={
-              <StockGuard>
-                <AdminProductsPage />
-              </StockGuard>
-            }
-          />
-        </Route>
+            {/* Stock/Admin Management Routes */}
+            <Route
+              path="/admin/categorias"
+              element={
+                <StockGuard>
+                  <AdminCategoriesPage />
+                </StockGuard>
+              }
+            />
+            <Route
+              path="/admin/ingredientes"
+              element={
+                <StockGuard>
+                  <AdminIngredientsPage />
+                </StockGuard>
+              }
+            />
+            <Route
+              path="/admin/productos"
+              element={
+                <StockGuard>
+                  <AdminProductsPage />
+                </StockGuard>
+              }
+            />
+          </Route>
 
-        {/* Access Denied Page */}
-        <Route path="/access-denied" element={<AccessDeniedPage />} />
-      </Routes>
+          {/* Access Denied Page */}
+          <Route path="/access-denied" element={<AccessDeniedPage />} />
+        </Routes>
+      </ToastProvider>
     </BrowserRouter>
   );
 }
@@ -128,15 +132,6 @@ function OrdersPage() {
     <div className="p-8">
       <h2 className="text-2xl font-display font-bold text-slate-100 mb-4">Orders Page</h2>
       <p className="text-slate-400">No orders yet</p>
-    </div>
-  );
-}
-
-function ProfilePage() {
-  return (
-    <div className="p-8">
-      <h2 className="text-2xl font-display font-bold text-slate-100 mb-4">Profile Page</h2>
-      <p className="text-slate-400">Manage your profile</p>
     </div>
   );
 }

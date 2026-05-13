@@ -15,14 +15,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-amber-500 text-slate-900 hover:bg-amber-400 active:bg-amber-600 shadow-sm hover:shadow-amber-500/20 hover:shadow-md',
+    'bg-amber-500 text-slate-950 font-black hover:bg-amber-400 active:bg-amber-600 shadow-sm hover:shadow-amber-500/40 hover:shadow-xl hover-glow-amber',
+
   secondary:
-    'bg-transparent border border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-500',
+    'bg-slate-800/50 border border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-500 hover:text-white',
   ghost:
-    'bg-transparent text-slate-300 hover:text-amber-400 hover:bg-slate-800/50',
+    'bg-transparent text-slate-400 hover:text-amber-400 hover:bg-amber-500/10',
   danger:
-    'bg-red-600 text-white hover:bg-red-500 active:bg-red-700 shadow-sm hover:shadow-red-500/20 hover:shadow-md',
+    'bg-red-600 text-white hover:bg-red-500 active:bg-red-700 shadow-sm hover:shadow-red-500/40 hover:shadow-xl',
 };
+
 
 const sizeStyles: Record<ButtonSize, string> = {
   sm: 'px-3 py-1.5 text-sm gap-1.5',

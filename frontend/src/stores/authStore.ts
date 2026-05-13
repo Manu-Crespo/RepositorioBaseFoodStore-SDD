@@ -16,13 +16,14 @@ export interface User {
 interface AuthState {
   user: User | null;
   accessToken: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
 }
 
 interface AuthActions {
   setUser: (user: User | null) => void;
-  setAccessToken: (token: string) => void;
-  login: (accessToken: string, user: User) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
+  login: (accessToken: string, refreshToken: string, user: User) => void;
   logout: () => void;
   refreshToken: () => Promise<void>;
 }
@@ -32,17 +33,19 @@ export const useAuthStore = create<AuthState & AuthActions>()(
     (set, get) => ({
       user: null,
       accessToken: null,
+      refreshToken: null,
       isAuthenticated: false,
 
       setUser: (user) => set({ user, isAuthenticated: !!user }),
 
-      setAccessToken: (token) => {
-        set({ accessToken: token });
+      setTokens: (accessToken, refreshToken) => {
+        set({ accessToken, refreshToken });
       },
 
-      login: (accessToken, user) => {
+      login: (accessToken, refreshToken, user) => {
         set({
           accessToken,
+          refreshToken,
           user,
           isAuthenticated: true,
         });
@@ -52,6 +55,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         set({
           user: null,
           accessToken: null,
+          refreshToken: null,
           isAuthenticated: false,
         });
       },
@@ -74,10 +78,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         // Token expired - need to refresh
         try {
           const { refreshToken: refreshTokenApi } = await import('../shared/api/auth');
-          const data = await refreshTokenApi();
+          const data = await refreshTokenApi(state.refreshToken || '');
           
           set({
             accessToken: data.access_token,
+            refreshToken: data.refresh_token,
             isAuthenticated: true,
           });
         } catch {
@@ -95,6 +100,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
     }

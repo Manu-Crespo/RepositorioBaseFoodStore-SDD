@@ -96,3 +96,43 @@ class LogoutRequest(BaseModel):
     """Schema for logout request."""
 
     refresh_token: str | None = None
+
+
+class ProfileUpdate(BaseModel):
+    """Schema for updating user profile data."""
+
+    first_name: str | None = Field(None, min_length=1, max_length=100)
+    last_name: str | None = Field(None, min_length=1, max_length=100)
+    phone: str | None = Field(None, max_length=20)
+
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, v: str | None) -> str | None:
+        """Validate phone format (international format supported)."""
+        if v is None:
+            return v
+        # Remove common separators for validation
+        cleaned = re.sub(r"[\s\-\(\)]", "", v)
+        # Must start with + or digit, contain only digits after that
+        if not re.match(r"^\+?\d{7,15}$", cleaned):
+            raise ValueError("Invalid phone format. Use: +XX XXX XXXX or XXXX XXXX")
+        return v
+
+
+class PasswordChange(BaseModel):
+    """Schema for changing user password."""
+
+    current_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=8, max_length=100)
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_password_strength(cls, v: str) -> str:
+        """Validate password has letters and numbers."""
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        if not any(c.isalpha() for c in v):
+            raise ValueError("Password must contain letters")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("Password must contain numbers")
+        return v

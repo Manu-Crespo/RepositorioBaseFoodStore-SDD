@@ -37,8 +37,8 @@ class ProductService:
         # Set ingredients
         if data.ingredient_ids:
             await self._repo.set_ingredients(product.id, data.ingredient_ids)
-
-        await self._repo.session.commit()
+        # Commit handled by UoW
+        # await self._repo.session.commit()
         product = await self._repo.get_with_relations(product.id)
 
         return await self._to_response(product)
@@ -95,8 +95,8 @@ class ProductService:
         # Update ingredients
         if data.ingredient_ids is not None:
             await self._repo.set_ingredients(product_id, data.ingredient_ids)
-
-        await self._repo.session.commit()
+        # Commit handled by UoW
+        # await self._repo.session.commit()
         product = await self._repo.get_with_relations(product_id)
         return await self._to_response(product)
 
@@ -106,7 +106,8 @@ class ProductService:
         """Update product stock."""
         try:
             product = await self._repo.update_stock(product_id, quantity, operation)
-            await self._repo.session.commit()
+            # Commit handled by UoW
+            # await self._repo.session.commit()
             if not product:
                 return None
             
@@ -126,7 +127,8 @@ class ProductService:
             raise ValueError("Cannot delete product with active orders")
 
         await self._repo.delete(product_id)
-        await self._repo.session.commit()
+        # Commit handled by UoW
+        # await self._repo.session.commit()
         return True
 
     # Catalogue (public) methods

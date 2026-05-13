@@ -5,6 +5,7 @@ export {
   CardHeader,
   CardContent,
   CardFooter,
+  CardTitle,
 } from './Card';
 export { Badge, RoleBadge, roleBadgeVariant } from './Badge';
 export { LoadingSpinner, PageLoader, LoadingText } from './LoadingSpinner';

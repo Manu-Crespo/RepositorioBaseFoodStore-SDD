@@ -26,7 +26,7 @@ interface ProductActions {
   createProduct: (product: ProductCreate) => Promise<ProductResponse>;
   updateProduct: (id: string, product: ProductUpdate) => Promise<ProductResponse>;
   deleteProduct: (id: string) => Promise<void>;
-  updateStock: (id: string, stock: number, operation?: 'set' | 'add' | 'remove') => Promise<ProductResponse>;
+  updateStock: (id: string, quantity: number, operation: 'set' | 'add' | 'remove') => Promise<ProductResponse>;
   setFilters: (filters: ProductFilter) => void;
   clearFilters: () => void;
   setCurrentProduct: (product: ProductResponse | null) => void;
@@ -117,10 +117,10 @@ export const useProductStore = create<ProductState & ProductActions>()(
       }
     },
 
-    updateStock: async (id, stock, operation = 'set') => {
+    updateStock: async (id, quantity, operation) => {
       set({ isLoading: true, error: null });
       try {
-        const data = await productsApi.updateStock(id, { stock, operation });
+        const data = await productsApi.updateStock(id, { quantity, operation });
         // Update current product if it's the same
         if (get().currentProduct?.id === id) {
           set({ currentProduct: data });

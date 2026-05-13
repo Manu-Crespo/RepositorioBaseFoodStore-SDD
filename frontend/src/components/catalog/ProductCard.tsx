@@ -26,17 +26,19 @@ export function ProductCard<T extends ProductBase>({ product, onClick, variant =
     return (
       <div
         onClick={() => onClick?.(product)}
-        className="flex items-center gap-3 p-2 border border-slate-700 rounded-lg cursor-pointer hover:bg-slate-800 transition-colors"
+        className="flex items-center gap-3 p-3 bg-slate-800/40 border border-slate-700/50 rounded-xl cursor-pointer hover:bg-slate-700/50 hover:border-amber-500/30 transition-all group"
       >
-        <div className="w-12 h-12 bg-slate-700 rounded flex items-center justify-center text-slate-500">
+        <div className="w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
           📦
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-200 truncate">{product.name}</p>
-          <p className="text-sm text-slate-400">${product.price.toFixed(2)}</p>
+          <p className="text-sm font-bold text-slate-100 truncate group-hover:text-amber-400 transition-colors">
+            {product.name}
+          </p>
+          <p className="text-xs font-medium text-amber-500/90">${product.price.toFixed(2)}</p>
         </div>
         {isOutOfStock && (
-          <Badge variant="error">Sin stock</Badge>
+          <Badge variant="error" size="sm">Sin stock</Badge>
         )}
       </div>
     );
@@ -45,67 +47,79 @@ export function ProductCard<T extends ProductBase>({ product, onClick, variant =
   return (
     <Card
       variant="interactive"
-      className={`overflow-hidden cursor-pointer ${isOutOfStock ? 'opacity-75' : ''}`}
+      className={`group relative flex flex-col h-full ${isOutOfStock ? 'opacity-80 grayscale-[0.5]' : ''}`}
       onClick={() => onClick?.(product)}
     >
-      {/* Image placeholder */}
-      <div className="aspect-square bg-slate-700 flex items-center justify-center">
-        <span className="text-4xl text-slate-500">🛒</span>
+      {/* Image Container with Gradient Placeholder */}
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-slate-800">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-700/50 via-slate-800 to-slate-900 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+          <div className="relative">
+            <div className="absolute inset-0 bg-amber-500/20 blur-2xl rounded-full" />
+            <span className="relative text-5xl filter drop-shadow-lg">
+              {product.name.toLowerCase().includes('hamburguesa') ? '🍔' : 
+               product.name.toLowerCase().includes('pizza') ? '🍕' : 
+               product.name.toLowerCase().includes('papa') ? '🍟' : 
+               product.name.toLowerCase().includes('bebida') ? '🥤' : '🛒'}
+            </span>
+          </div>
+        </div>
+        
+        {/* Badges on top of image */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+          {isOutOfStock ? (
+            <Badge variant="error" className="shadow-lg backdrop-blur-md bg-red-900/80">Sin stock</Badge>
+          ) : product.stock < 10 ? (
+            <Badge variant="warning" className="shadow-lg backdrop-blur-md bg-amber-900/80">¡Últimos {product.stock}!</Badge>
+          ) : null}
+        </div>
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="font-medium text-slate-100 mb-1 line-clamp-2">{product.name}</h3>
-
-        {product.description && (
-          <p className="text-sm text-slate-400 mb-2 line-clamp-2">{product.description}</p>
-        )}
-
-        {/* Price and stock */}
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-amber-400">${product.price.toFixed(2)}</span>
-          {isOutOfStock ? (
-            <Badge variant="error">Sin stock</Badge>
-          ) : (
-            <span className="text-sm text-emerald-400">{product.stock} disponibles</span>
+      <div className="p-5 flex flex-col flex-1">
+        <div className="mb-3">
+          <h3 className="text-lg font-display font-bold text-slate-100 group-hover:text-amber-400 transition-colors line-clamp-1">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-sm text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+              {product.description}
+            </p>
           )}
         </div>
 
-        {/* Categories */}
-        {product.categories && product.categories.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {product.categories.slice(0, 2).map((cat: { id: string; name: string }) => (
-              <span key={cat.id} className="px-2 py-0.5 bg-slate-700 text-slate-300 text-xs rounded">
-                {cat.name}
-              </span>
-            ))}
-            {product.categories.length > 2 && (
-              <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-xs rounded">
-                +{product.categories.length - 2}
-              </span>
-            )}
+        <div className="mt-auto flex items-end justify-between">
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5">Precio</span>
+            <span className="text-2xl font-black text-amber-400 leading-none">
+              ${product.price.toFixed(2)}
+            </span>
           </div>
-        )}
+          
+          {!isOutOfStock && (
+            <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-slate-900 shadow-lg shadow-amber-500/20 group-hover:scale-110 active:scale-95 transition-all">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+          )}
+        </div>
 
-        {/* Allergens warning */}
-        {product.allergens && product.allergens.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {product.allergens.slice(0, 3).map((allergen: string) => (
-              <span
-                key={allergen}
-                className="px-2 py-0.5 bg-amber-900/30 text-amber-400 text-xs rounded"
-              >
-                ⚠️ {allergen}
-              </span>
+        {/* Categories & Allergens Footer */}
+        {(product.categories?.length || product.allergens?.length) ? (
+          <div className="mt-4 pt-4 border-t border-slate-700/50 flex flex-wrap gap-1.5">
+            {product.categories?.slice(0, 2).map((cat) => (
+              <Badge key={cat.id} variant="default" size="sm" className="bg-slate-700/50 text-slate-400 lowercase font-bold">
+                #{cat.name}
+              </Badge>
             ))}
-            {product.allergens.length > 3 && (
-              <span className="px-2 py-0.5 bg-amber-900/30 text-amber-400 text-xs rounded">
-                +{product.allergens.length - 3}
-              </span>
-            )}
+            {product.allergens?.slice(0, 2).map((allergen) => (
+              <Badge key={allergen} variant="warning" size="sm" className="bg-amber-900/20 border-transparent text-amber-500/80 font-black">
+                {allergen}
+              </Badge>
+            ))}
           </div>
-        )}
+        ) : null}
       </div>
     </Card>
   );
-}
+}

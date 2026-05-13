@@ -70,7 +70,7 @@ class IngredientService:
 
     async def delete(self, ingredient_id: str) -> bool:
         """Delete an ingredient (soft delete)."""
-        ingredient = await self._repo.get(ingredient_id)
+        ingredient = await self._repo.get_with_products(ingredient_id)
         if not ingredient:
             return False
 

@@ -172,12 +172,6 @@ const customerNavigation: NavigationItem[] = [
     icon: <OrdersIcon />,
     roles: ['customer'],
   },
-  {
-    label: 'Perfil',
-    path: '/profile',
-    icon: <ProfileIcon />,
-    roles: ['customer'],
-  },
 ];
 
 export function useNavigationItems(): NavigationItem[] {
